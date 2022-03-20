@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from "react";
 
-import '../styles/tasklist.scss'
+import '../styles/tasklist.scss';
 
-import { FiTrash, FiCheckSquare } from 'react-icons/fi'
+import { FiTrash, FiCheckSquare } from 'react-icons/fi';
+
+import { v4 as uuidv4 } from 'uuid';
 
 interface Task {
-  id: number;
+  id: string;
   title: string;
   isComplete: boolean;
 }
@@ -14,16 +16,37 @@ export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
-  function handleCreateNewTask() {
+  function handleCreateNewTask(task:Task) {
+    if(!newTaskTitle)return 
+    setTasks([...tasks,{
+      id:uuidv4(),
+      title:newTaskTitle,
+       isComplete: false}] );
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
   }
 
-  function handleToggleTaskCompletion(id: number) {
+  function handleToggleTaskCompletion(id: string) {
+
+    const newTasks = tasks.map(task=>task.id ===id?{
+      ...task,isComplete: !task.isComplete} :task
+    );
+    // const ind= tasks.findIndex((item)=>item.id === id);
+    // const newTasks = tasks.filter(()=>id !== '0');
+   
+// Aparentemente o useState só atualiza se voce utiliza funcoes construtoras, entao "Const newTasks = tasks" nao funciona.
+
+    // newTasks[ind].isComplete = !newTasks[ind].isComplete;
+    
+
+
+    setTasks(newTasks)
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
   }
-
-  function handleRemoveTask(id: number) {
+  function handleRemoveTask(id: string) {
     // Remova uma task da listagem pelo ID
+    const newTasks = tasks.filter(task=> task.id !== id)
+
+    setTasks(newTasks)
   }
 
   return (
